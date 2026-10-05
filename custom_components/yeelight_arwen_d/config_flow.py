@@ -1,4 +1,4 @@
-"""Config flow for Yeelight Arwen."""
+"""Config flow for Yeelight Arwen D."""
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ class ArwenConfigFlow(ConfigFlow, domain=DOMAIN):
                         await self.async_set_unique_id(format_mac(info["mac"]))
                         self._abort_if_unique_id_configured(updates={CONF_HOST: host, CONF_DID: client.did})
                         return self.async_create_entry(
-                            title="Yeelight Arwen",
+                            title="Yeelight Arwen D",
                             data={CONF_HOST: host, CONF_TOKEN: token, CONF_DID: client.did},
                         )
 

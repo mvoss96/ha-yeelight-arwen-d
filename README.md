@@ -1,4 +1,4 @@
-# Yeelight Arwen for Home Assistant
+# Yeelight Arwen D for Home Assistant
 
 Custom integration for the Yeelight Arwen ceiling light D600
 (`yeelink.light.ceil43`), controlled entirely over the local network.
@@ -43,9 +43,9 @@ The lamp stays usable in the Mi Home app.
 
 ## Installation
 
-Copy `custom_components/yeelight_arwen` into the `custom_components` folder of
+Copy `custom_components/yeelight_arwen_d` into the `custom_components` folder of
 the Home Assistant configuration, or add this repository to HACS as a custom
-repository. Restart Home Assistant, add the integration **Yeelight Arwen**,
+repository. Restart Home Assistant, add the integration **Yeelight Arwen D**,
 pick the lamp and enter the token.
 
 ## Protocol notes
@@ -71,5 +71,5 @@ Debug logging of all sent commands:
 ```yaml
 logger:
   logs:
-    custom_components.yeelight_arwen: debug
+    custom_components.yeelight_arwen_d: debug
 ```

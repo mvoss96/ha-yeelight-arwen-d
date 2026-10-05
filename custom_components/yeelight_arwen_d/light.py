@@ -1,4 +1,4 @@
-"""Main light and ambient light of a Yeelight Arwen ceiling light."""
+"""Main light and ambient light of a Yeelight Arwen D ceiling light."""
 
 from __future__ import annotations
 
@@ -16,15 +16,12 @@ from homeassistant.components.light import (
     LightEntityFeature,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import ArwenConfigEntry
 from .const import (
     COLOR_MODE_FLOW,
     COLOR_MODE_RGB,
-    DOMAIN,
     EFFECT_BY_INDEX,
     EFFECT_MOONLIGHT,
     EFFECTS,
@@ -34,6 +31,7 @@ from .const import (
     POWER_MODE_RGB,
 )
 from .coordinator import ArwenCoordinator
+from .entity import ArwenEntity
 
 # Fade used when Home Assistant sends no transition; the Mi Home app uses the same.
 DEFAULT_TRANSITION_MS = 500
@@ -78,27 +76,15 @@ def clamp_kelvin(kelvin: int) -> int:
     return min(MAX_KELVIN, max(MIN_KELVIN, kelvin))
 
 
-class ArwenLight(CoordinatorEntity[ArwenCoordinator], LightEntity):
+class ArwenLight(ArwenEntity, LightEntity):
     """Common setup of both lights."""
 
-    _attr_has_entity_name = True
     _attr_supported_color_modes = {ColorMode.COLOR_TEMP, ColorMode.RGB}
     _attr_min_color_temp_kelvin = MIN_KELVIN
     _attr_max_color_temp_kelvin = MAX_KELVIN
 
     def __init__(self, coordinator: ArwenCoordinator, key: str) -> None:
-        super().__init__(coordinator)
-        info = coordinator.info
-        unique_id = coordinator.config_entry.unique_id
-        self._attr_unique_id = f"{unique_id}_{key}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, unique_id)},
-            connections={(CONNECTION_NETWORK_MAC, info["mac"])},
-            manufacturer="Yeelight",
-            model=info["model"],
-            name="Yeelight Arwen",
-            sw_version=info["fw_ver"],
-        )
+        super().__init__(coordinator, key)
         self._update_from_data()
 
     def _handle_coordinator_update(self) -> None:

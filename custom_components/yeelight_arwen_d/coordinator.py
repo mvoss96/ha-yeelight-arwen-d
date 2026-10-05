@@ -11,7 +11,7 @@ from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import CONF_DID, DOMAIN, PROPS, REDISCOVERY_INTERVAL, SCAN_INTERVAL
+from .const import CONF_DID, DOMAIN, INFO_EVERY_POLLS, PROPS, REDISCOVERY_INTERVAL, SCAN_INTERVAL
 from .miio import MiioClient, MiioError, discover
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ class ArwenCoordinator(DataUpdateCoordinator[dict[str, str]]):
         self.client = client
         self.info: dict[str, Any] = {}
         self._last_discovery = 0.0
+        self._polls = 0
 
     async def async_call(self, method: str, params: Any) -> Any:
         """Send one command; if the lamp does not answer, look for it under a new IP and retry once."""
@@ -34,6 +35,12 @@ class ArwenCoordinator(DataUpdateCoordinator[dict[str, str]]):
             if not await self._async_rediscover():
                 raise
         return await self.hass.async_add_executor_job(self.client.send, method, params)
+
+    async def async_refresh_info(self) -> None:
+        """Read miIO.info (model, firmware, Wi-Fi, uptime) without keeping the token it contains."""
+        info = await self.async_call("miIO.info", [])
+        info.pop("token", None)
+        self.info = info
 
     async def _async_rediscover(self) -> bool:
         """Find the lamp by its device id; return True if it answered under a different IP."""
@@ -54,6 +61,9 @@ class ArwenCoordinator(DataUpdateCoordinator[dict[str, str]]):
     async def _async_update_data(self) -> dict[str, str]:
         try:
             values = await self.async_call("get_prop", list(PROPS))
+            self._polls += 1
+            if self._polls % INFO_EVERY_POLLS == 0:
+                await self.async_refresh_info()
         except MiioError as err:
             raise UpdateFailed(str(err)) from err
         return dict(zip(PROPS, values))

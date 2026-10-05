@@ -1,4 +1,4 @@
-"""Local control of Yeelight Arwen ceiling lights over miIO."""
+"""Local control of Yeelight Arwen D ceiling lights over miIO."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from .const import CONF_DID
 from .coordinator import ArwenCoordinator
 from .miio import MiioClient, MiioError
 
-PLATFORMS = [Platform.LIGHT]
+PLATFORMS = [Platform.LIGHT, Platform.SENSOR]
 
 type ArwenConfigEntry = ConfigEntry[ArwenCoordinator]
 
@@ -20,7 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ArwenConfigEntry) -> boo
     """Connect to the lamp and start polling."""
     coordinator = ArwenCoordinator(hass, entry, MiioClient(entry.data[CONF_HOST], entry.data[CONF_TOKEN]))
     try:
-        coordinator.info = await coordinator.async_call("miIO.info", [])
+        await coordinator.async_refresh_info()
     except MiioError as err:
         raise ConfigEntryNotReady(str(err)) from err
     if entry.data.get(CONF_DID) != coordinator.client.did:

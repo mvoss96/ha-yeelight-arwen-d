@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Yeelight Arwen",
+        "title": "Yeelight Arwen D",
         "data": { "host": "Lampe", "token": "Token" },
         "data_description": {
           "host": "Im Netz gefundene Lampen mit IP-Adresse und Geräte-ID. Eine IP-Adresse kann auch eingetippt werden. Bekommt die Lampe später eine andere IP-Adresse, wird sie automatisch wiedergefunden.",
@@ -20,6 +20,11 @@
   "entity": {
     "light": {
       "ambient": { "name": "Hintergrundlicht" }
+    },
+    "sensor": {
+      "signal": { "name": "WLAN-Signal" },
+      "ip_address": { "name": "IP-Adresse" },
+      "last_restart": { "name": "Letzter Neustart" }
     }
   }
 }

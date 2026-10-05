@@ -1,12 +1,14 @@
-"""Constants for the Yeelight Arwen integration."""
+"""Constants for the Yeelight Arwen D integration."""
 
 from datetime import timedelta
 
-DOMAIN = "yeelight_arwen"
+DOMAIN = "yeelight_arwen_d"
 SUPPORTED_MODELS = ("yeelink.light.ceil43",)
 SCAN_INTERVAL = timedelta(seconds=3)
 # Minimum seconds between two broadcast searches for a lamp that stopped answering.
 REDISCOVERY_INTERVAL = 60
+# miIO.info (Wi-Fi signal, uptime) is read on every 20th poll, about once a minute.
+INFO_EVERY_POLLS = 20
 
 CONF_DID = "did"
 
