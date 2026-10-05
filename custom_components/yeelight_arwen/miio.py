@@ -19,11 +19,29 @@ class MiioError(Exception):
     """The device did not answer or returned an error."""
 
 
+def discover(timeout: float = 3.0) -> dict[int, str]:
+    """Broadcast a hello and return {device id: IP address} of every miIO device that answers."""
+    found: dict[int, str] = {}
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        sock.settimeout(timeout)
+        sock.sendto(HELLO, ("255.255.255.255", PORT))
+        try:
+            while True:
+                reply, (ip, _) = sock.recvfrom(1024)
+                if len(reply) >= 32 and reply[:2] == b"\x21\x31":
+                    found[int.from_bytes(reply[8:12], "big")] = ip
+        except OSError:
+            pass
+    return found
+
+
 class MiioClient:
     """Send miIO commands to one device."""
 
     def __init__(self, host: str, token: str, timeout: float = 3.0) -> None:
-        self._host = host
+        self.host = host
+        self.did: int | None = None
         self._token = bytes.fromhex(token)
         self._key = hashlib.md5(self._token).digest()
         self._iv = hashlib.md5(self._key + self._token).digest()
@@ -36,13 +54,14 @@ class MiioClient:
             sock.settimeout(self._timeout)
             try:
                 # The hello reply carries the device id and its clock, which every packet must echo.
-                sock.sendto(HELLO, (self._host, PORT))
+                sock.sendto(HELLO, (self.host, PORT))
                 hello, _ = sock.recvfrom(1024)
+                self.did = int.from_bytes(hello[8:12], "big")
                 request = {"id": next(self._ids) % 10000 + 1, "method": method, "params": params}
-                sock.sendto(self._pack(request, hello[8:12], hello[12:16]), (self._host, PORT))
+                sock.sendto(self._pack(request, hello[8:12], hello[12:16]), (self.host, PORT))
                 reply, _ = sock.recvfrom(4096)
             except OSError as err:
-                raise MiioError(f"{method}: no reply from {self._host}") from err
+                raise MiioError(f"{method}: no reply from {self.host}") from err
         response = self._unpack(reply)
         if "error" in response:
             raise MiioError(f"{method}: {response['error']}")

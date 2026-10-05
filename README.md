@@ -28,10 +28,16 @@ Without a `transition` the lamp fades for 0.5 s, like the Mi Home app.
 ## Requirements
 
 - Home Assistant 2025.8 or newer.
-- The lamp's IP address (best made fixed in the router) and its 32-character
-  miIO token, for example from
+- The lamp's 32-character miIO token, for example from
   [Xiaomi-cloud-tokens-extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor).
   The token changes when the lamp is reset and paired again.
+
+No fixed IP address is needed. The setup dialog lists the lamps that answer a
+miIO broadcast (hello packet to UDP 54321) by IP address and device ID; an IP
+address can also be typed in. The device ID is stored with the entry. When the
+lamp stops answering, the integration broadcasts again (at most once a minute),
+and if the lamp answers under a different IP address, that address is used and
+saved.
 
 The lamp stays usable in the Mi Home app.
 
@@ -39,8 +45,8 @@ The lamp stays usable in the Mi Home app.
 
 Copy `custom_components/yeelight_arwen` into the `custom_components` folder of
 the Home Assistant configuration, or add this repository to HACS as a custom
-repository. Restart Home Assistant, add the integration **Yeelight Arwen** and
-enter IP address and token.
+repository. Restart Home Assistant, add the integration **Yeelight Arwen**,
+pick the lamp and enter the token.
 
 ## Protocol notes
 

@@ -5,6 +5,10 @@ from datetime import timedelta
 DOMAIN = "yeelight_arwen"
 SUPPORTED_MODELS = ("yeelink.light.ceil43",)
 SCAN_INTERVAL = timedelta(seconds=3)
+# Minimum seconds between two broadcast searches for a lamp that stopped answering.
+REDISCOVERY_INTERVAL = 60
+
+CONF_DID = "did"
 
 # Properties read with get_prop; the same list the Mi Home plugin uses, minus unused ones.
 PROPS = (

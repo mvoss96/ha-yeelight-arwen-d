@@ -3,9 +3,9 @@
     "step": {
       "user": {
         "title": "Yeelight Arwen",
-        "data": { "host": "IP address", "token": "Token" },
+        "data": { "host": "Lamp", "token": "Token" },
         "data_description": {
-          "host": "Fixed IP address of the lamp in the local network.",
+          "host": "Lamps found on the network, listed by IP address and device ID. An IP address can also be typed in. If the lamp later gets a different IP address, it is found again automatically.",
           "token": "32-character miIO token of the lamp, e.g. from Xiaomi-cloud-tokens-extractor."
         }
       }
