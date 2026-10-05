@@ -35,8 +35,10 @@ class SettingSwitch(ArwenEntity, SwitchEntity):
         self._prop, self._setting, self._attr_name = SWITCH_SETTINGS[key]
 
     @property
-    def is_on(self) -> bool:
-        return self.coordinator.data[self._prop] == "1"
+    def is_on(self) -> bool | None:
+        value = self.coordinator.data[self._prop]
+        # Firmware without this setting returns "": unknown, not off.
+        return value == "1" if value else None
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         await self.coordinator.async_send([("set_ps", [self._setting, "1"])])

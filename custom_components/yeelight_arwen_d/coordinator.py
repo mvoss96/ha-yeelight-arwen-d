@@ -28,7 +28,8 @@ class ArwenCoordinator(DataUpdateCoordinator[dict[str, str]]):
         self.client = client
         self.info: dict[str, Any] = {}
         self.boot_time: datetime | None = None
-        self._last_discovery = 0.0
+        # monotonic() starts near 0 at host boot, so 0.0 would block discovery for the first minute.
+        self._last_discovery = -REDISCOVERY_INTERVAL
         self._polls = 0
 
     async def async_call(self, method: str, params: Any) -> Any:
@@ -45,9 +46,11 @@ class ArwenCoordinator(DataUpdateCoordinator[dict[str, str]]):
         info = await self.async_call("miIO.info", [])
         info.pop("token", None)
         self.info = info
-        # Computed once per refresh; recomputing it on every poll would drift with the stale uptime.
+        # Uptime is whole seconds read with network delay, so each computation differs by about 1 s.
+        # Only a difference of more than a minute is taken as a real restart.
         boot = dt_util.utcnow() - timedelta(seconds=info.get("life", 0))
-        self.boot_time = boot.replace(second=0, microsecond=0)
+        if self.boot_time is None or abs(boot - self.boot_time) > timedelta(minutes=1):
+            self.boot_time = boot.replace(microsecond=0)
 
     async def _async_rediscover(self) -> bool:
         """Find the lamp by its device id; return True if it answered under a different IP."""

@@ -78,6 +78,15 @@ def from_rgb(rgb: tuple[int, int, int]) -> int:
     return max(1, (rgb[0] << 16) | (rgb[1] << 8) | rgb[2])
 
 
+def color_power_mode(kwargs: dict[str, Any]) -> int | None:
+    """Return the set_power mode that matches a requested color, or None without one."""
+    if ATTR_RGB_COLOR in kwargs:
+        return POWER_MODE_RGB
+    if ATTR_COLOR_TEMP_KELVIN in kwargs:
+        return POWER_MODE_CT
+    return None
+
+
 def clamp_kelvin(kelvin: int) -> int:
     return min(MAX_KELVIN, max(MIN_KELVIN, kelvin))
 
@@ -148,16 +157,14 @@ class MainLight(ArwenLight):
             await self.coordinator.async_send([("set_scene", ["nightlight", moon, *smooth])])
             return
 
-        if ATTR_RGB_COLOR in kwargs:
-            power_mode = POWER_MODE_RGB
-        elif ATTR_COLOR_TEMP_KELVIN in kwargs or effect == EFFECT_OFF:
+        power_mode = color_power_mode(kwargs)
+        if power_mode is None and effect == EFFECT_OFF:
             power_mode = POWER_MODE_CT
-        else:
-            power_mode = None
 
         if not self._attr_is_on:
             commands.append(("set_power", ["on", *smooth] + ([power_mode] if power_mode else [])))
-        elif effect == EFFECT_OFF and ATTR_COLOR_TEMP_KELVIN not in kwargs:
+        elif effect == EFFECT_OFF and color_power_mode(kwargs) is None:
+            # set_rgb / set_ct_abx leave the effect on their own; only a bare "off" needs set_power.
             commands.append(("set_power", ["on", *smooth, POWER_MODE_CT]))
 
         if ATTR_RGB_COLOR in kwargs:
@@ -197,12 +204,8 @@ class AmbientLight(ArwenLight):
         smooth = fade(kwargs, self._default_ms)
         commands: list[tuple[str, list[Any]]] = []
         if not self._attr_is_on:
-            if ATTR_RGB_COLOR in kwargs:
-                commands.append(("bg_set_power", ["on", *smooth, POWER_MODE_RGB]))
-            elif ATTR_COLOR_TEMP_KELVIN in kwargs:
-                commands.append(("bg_set_power", ["on", *smooth, POWER_MODE_CT]))
-            else:
-                commands.append(("bg_set_power", ["on", *smooth]))
+            power_mode = color_power_mode(kwargs)
+            commands.append(("bg_set_power", ["on", *smooth] + ([power_mode] if power_mode else [])))
         if ATTR_RGB_COLOR in kwargs:
             commands.append(("bg_set_rgb", [from_rgb(kwargs[ATTR_RGB_COLOR]), *smooth]))
         if ATTR_COLOR_TEMP_KELVIN in kwargs:
