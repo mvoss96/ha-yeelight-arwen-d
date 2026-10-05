@@ -1,0 +1,12 @@
+{
+  "domain": "yeelight_arwen",
+  "name": "Yeelight Arwen",
+  "codeowners": ["@mvoss96"],
+  "config_flow": true,
+  "documentation": "https://github.com/mvoss96/ha-yeelight-arwen",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/mvoss96/ha-yeelight-arwen/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

@@ -1,0 +1,25 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Yeelight Arwen",
+        "data": { "host": "IP-Adresse", "token": "Token" },
+        "data_description": {
+          "host": "Feste IP-Adresse der Lampe im lokalen Netz.",
+          "token": "32-stelliger miIO-Token der Lampe, z. B. aus Xiaomi-cloud-tokens-extractor."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Die Lampe antwortet nicht. IP-Adresse und Token prüfen.",
+      "invalid_token": "Der Token muss aus 32 Hexadezimalzeichen bestehen.",
+      "unsupported_model": "Dieses Lampenmodell wird nicht unterstützt."
+    },
+    "abort": { "already_configured": "Diese Lampe ist bereits eingerichtet." }
+  },
+  "entity": {
+    "light": {
+      "ambient": { "name": "Hintergrundlicht" }
+    }
+  }
+}
