@@ -16,7 +16,15 @@ CONF_DID = "did"
 PROPS = (
     "main_power", "bright", "ct", "rgb", "color_mode", "nl_br", "current_effect_index",
     "bg_power", "bg_bright", "bg_ct", "bg_rgb", "bg_lmode",
+    "trans_interval_dflt", "bg_proact", "save_state", "smart_switch",
 )
+
+# On/off settings of the Mi Home app: key -> (property read with get_prop, name written with set_ps, entity name).
+SWITCH_SETTINGS = {
+    "ambient_follows": ("bg_proact", "cfg_bg_proact", "Ambient follows primary light"),
+    "remember_state": ("save_state", "cfg_save_state", "Remember last state"),
+    "wall_switch": ("smart_switch", "cfg_smart_switch", "Wall switch mode"),
+}
 
 # color_mode values of the main light.
 COLOR_MODE_RGB = 1

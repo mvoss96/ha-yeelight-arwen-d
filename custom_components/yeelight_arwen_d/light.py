@@ -33,10 +33,6 @@ from .const import (
 from .coordinator import ArwenCoordinator
 from .entity import ArwenEntity
 
-# Fade used when Home Assistant sends no transition; the Mi Home app uses the same.
-DEFAULT_TRANSITION_MS = 500
-
-
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ArwenConfigEntry,
@@ -47,10 +43,14 @@ async def async_setup_entry(
     async_add_entities([MainLight(coordinator), AmbientLight(coordinator)])
 
 
-def fade(kwargs: dict[str, Any]) -> list[Any]:
-    """Return the ["smooth", ms] / ["sudden", 0] arguments for a transition in seconds."""
+def fade(kwargs: dict[str, Any], default_ms: int) -> list[Any]:
+    """Return the ["smooth", ms] / ["sudden", 0] arguments for a transition in seconds.
+
+    Without a transition the lamp's own default (set in the Mi Home app or the
+    Default transition entity) is used.
+    """
     seconds = kwargs.get(ATTR_TRANSITION)
-    ms = DEFAULT_TRANSITION_MS if seconds is None else int(seconds * 1000)
+    ms = default_ms if seconds is None else int(seconds * 1000)
     # The lamp rejects smooth fades shorter than 30 ms.
     return ["smooth", ms] if ms >= 30 else ["sudden", 0]
 
@@ -86,6 +86,10 @@ class ArwenLight(ArwenEntity, LightEntity):
     def __init__(self, coordinator: ArwenCoordinator, key: str) -> None:
         super().__init__(coordinator, key)
         self._update_from_data()
+
+    @property
+    def _default_ms(self) -> int:
+        return int(self.coordinator.data["trans_interval_dflt"] or 0)
 
     def _handle_coordinator_update(self) -> None:
         self._update_from_data()
@@ -123,7 +127,7 @@ class MainLight(ArwenLight):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on and apply color, brightness or effect with the requested fade."""
-        smooth = fade(kwargs)
+        smooth = fade(kwargs, self._default_ms)
         effect = kwargs.get(ATTR_EFFECT)
         percent = to_percent(kwargs[ATTR_BRIGHTNESS]) if ATTR_BRIGHTNESS in kwargs else None
         commands: list[tuple[str, list[Any]]] = []
@@ -161,7 +165,7 @@ class MainLight(ArwenLight):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off with the requested fade."""
-        await self.coordinator.async_send([("set_power", ["off", *fade(kwargs)])])
+        await self.coordinator.async_send([("set_power", ["off", *fade(kwargs, self._default_ms)])])
 
 
 class AmbientLight(ArwenLight):
@@ -183,7 +187,7 @@ class AmbientLight(ArwenLight):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on and apply color and brightness with the requested fade."""
-        smooth = fade(kwargs)
+        smooth = fade(kwargs, self._default_ms)
         commands: list[tuple[str, list[Any]]] = []
         if not self._attr_is_on:
             if ATTR_RGB_COLOR in kwargs:
@@ -202,4 +206,4 @@ class AmbientLight(ArwenLight):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off with the requested fade."""
-        await self.coordinator.async_send([("bg_set_power", ["off", *fade(kwargs)])])
+        await self.coordinator.async_send([("bg_set_power", ["off", *fade(kwargs, self._default_ms)])])

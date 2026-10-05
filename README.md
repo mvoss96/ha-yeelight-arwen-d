@@ -25,8 +25,16 @@ addressable main light. This integration uses those commands.
   Mi Home app or the remote appear with up to 3 s delay.
 - **Diagnostic sensors**: Wi-Fi signal (dBm), IP address and last restart,
   from `miIO.info`, read about once a minute.
+- **Configuration** (settings of the Mi Home app, stored in the lamp):
+  - `Ambient follows primary light`: the ambient light turns on and off with
+    the primary light.
+  - `Remember last state`: after power returns, the lamp restores its last
+    state.
+  - `Wall switch mode`: for operation with a Mi wall switch.
+  - `Default transition` (30-10000 ms): the fade the lamp uses when a command
+    carries no fade time.
 
-Without a `transition` the lamp fades for 0.5 s, like the Mi Home app.
+Without a `transition` the lamp fades for its `Default transition`.
 `transition: 0` switches instantly.
 
 ## Requirements
