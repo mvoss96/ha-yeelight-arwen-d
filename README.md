@@ -11,6 +11,11 @@ Light D") and most likely uses the same model ID and firmware, so it should work
 as well, but has not been tested. The setup dialog accepts lamps that report
 `yeelink.light.ceil43`; reports from 500D owners are welcome.
 
+- Product page: [Arwen Ceiling Light D Series](https://en.yeelight.com/product/arwen-ceiling-light-d-series/) (Yeelight)
+- Device specification: [`yeelink.light.ceil43`](https://home.miot-spec.com/spec/yeelink.light.ceil43) (Xiaomi MIoT)
+- The lamp cannot be added to the Yeelight app or enabled for Yeelight LAN
+  control: [Yeelight forum thread](https://forum.yeelight.com/t/topic/37030)
+
 The official Xiaomi Home integration sends MIoT property writes, which carry no
 fade time, and receives state changes through the Xiaomi cloud. The lamp does
 not offer the Yeelight LAN protocol (TCP 55443). It does accept the Yeelight
