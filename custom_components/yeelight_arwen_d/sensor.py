@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import SIGNAL_STRENGTH_DECIBELS_MILLIWATT, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
-from homeassistant.util import dt as dt_util
 
 from . import ArwenConfigEntry
 from .coordinator import ArwenCoordinator
@@ -62,7 +61,7 @@ class IpSensor(ArwenDiagnosticSensor):
 
 
 class RestartSensor(ArwenDiagnosticSensor):
-    """Time of the last restart, from the uptime ("life", seconds)."""
+    """Time of the last restart, computed from the uptime when miIO.info is read."""
 
     _attr_device_class = SensorDeviceClass.TIMESTAMP
 
@@ -71,9 +70,4 @@ class RestartSensor(ArwenDiagnosticSensor):
 
     @property
     def native_value(self) -> datetime | None:
-        life = self.coordinator.info.get("life")
-        if life is None:
-            return None
-        # Rounded to the minute so the value does not move with every uptime reading.
-        boot = dt_util.utcnow() - timedelta(seconds=life)
-        return boot.replace(second=0, microsecond=0)
+        return self.coordinator.boot_time

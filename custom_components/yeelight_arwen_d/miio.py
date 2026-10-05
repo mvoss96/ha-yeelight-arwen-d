@@ -16,7 +16,11 @@ HELLO = bytes.fromhex("21310020" + "ff" * 28)
 
 
 class MiioError(Exception):
-    """The device did not answer or returned an error."""
+    """The device returned an error or an unreadable reply."""
+
+
+class MiioTimeout(MiioError):
+    """The device did not answer."""
 
 
 def discover(timeout: float = 3.0) -> dict[int, str]:
@@ -25,8 +29,9 @@ def discover(timeout: float = 3.0) -> dict[int, str]:
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         sock.settimeout(timeout)
-        sock.sendto(HELLO, ("255.255.255.255", PORT))
+        # Without a broadcast route (some Docker or VLAN setups) sendto fails; the result is then empty.
         try:
+            sock.sendto(HELLO, ("255.255.255.255", PORT))
             while True:
                 reply, (ip, _) = sock.recvfrom(1024)
                 if len(reply) >= 32 and reply[:2] == b"\x21\x31":
@@ -56,8 +61,12 @@ class MiioClient:
                 break
             except OSError as err:
                 if attempt == 1:
-                    raise MiioError(f"{method}: no reply from {self.host}") from err
-        response = self._unpack(reply)
+                    raise MiioTimeout(f"{method}: no reply from {self.host}") from err
+        try:
+            response = self._unpack(reply)
+        except ValueError as err:
+            # Bad padding or JSON: truncated packet or wrong token.
+            raise MiioError(f"{method}: unreadable reply from {self.host}") from err
         if "error" in response:
             raise MiioError(f"{method}: {response['error']}")
         return response.get("result")

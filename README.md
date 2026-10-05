@@ -95,8 +95,7 @@ logger:
 ## About
 
 This integration was developed with the help of
-[Claude Code](https://claude.com/claude-code). The protocol details were taken
-from the lamp's firmware and the Mi Home device plugin and verified on a real
-Arwen 600D.
+[Claude Code](https://claude.com/claude-code). The protocol details were worked
+out and verified on a real Arwen 600D.
 
 Not affiliated with Yeelight or Xiaomi. Licensed under the [MIT License](LICENSE).

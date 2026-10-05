@@ -15,7 +15,7 @@ from homeassistant.components.light import (
     LightEntity,
     LightEntityFeature,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import ArwenConfigEntry
@@ -97,6 +97,7 @@ class ArwenLight(ArwenEntity, LightEntity):
     def _default_ms(self) -> int:
         return num(self.coordinator.data["trans_interval_dflt"])
 
+    @callback
     def _handle_coordinator_update(self) -> None:
         self._update_from_data()
         super()._handle_coordinator_update()
