@@ -1,7 +1,13 @@
 # Yeelight Arwen D for Home Assistant
 
-Custom integration for the Yeelight Arwen ceiling light D600
+Custom integration for the Yeelight Arwen D ceiling lights
 (`yeelink.light.ceil43`), controlled entirely over the local network.
+
+Tested with the Arwen 600D (about 60 cm, YLXDD-0150, firmware 2.1.7_0018). The
+smaller Arwen 500D (about 50 cm) is sold as the same product ("Arwen Ceiling
+Light D") and most likely uses the same model ID and firmware, so it should work
+as well, but has not been tested. The setup dialog accepts lamps that report
+`yeelink.light.ceil43`; reports from 500D owners are welcome.
 
 The official Xiaomi Home integration sends MIoT property writes, which carry no
 fade time, and receives state changes through the Xiaomi cloud. The lamp does
