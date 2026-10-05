@@ -16,15 +16,5 @@
       "unsupported_model": "This lamp model is not supported."
     },
     "abort": { "already_configured": "This lamp is already set up." }
-  },
-  "entity": {
-    "light": {
-      "ambient": { "name": "Ambient light" }
-    },
-    "sensor": {
-      "signal": { "name": "Wi-Fi signal" },
-      "ip_address": { "name": "IP address" },
-      "last_restart": { "name": "Last restart" }
-    }
   }
 }

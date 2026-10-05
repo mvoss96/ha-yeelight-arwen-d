@@ -11,14 +11,15 @@ addressable main light. This integration uses those commands.
 
 ## Features
 
-- **Main light**: on/off, brightness, color temperature (2700-6500 K), RGB,
-  transitions.
-- **Effects** on the main light: `Moonlight` (night light with its own
+- **Primary light** (`light.yeelight_arwen_d_primary_light`): on/off,
+  brightness, color temperature (2700-6500 K), RGB, transitions.
+- **Effects** on the primary light: `Night light` (with its own
   brightness) and the 16 effects of the Mi Home app (Glittering, Pinball,
   Deep Sea, Rainbow, Green Shade, Ice Cream, Waxing Moon, Green Hills, Bonfire,
   Party, Garden, Winter, Heartbeat, Christmas, Sunset, Fantasy). The effect
   `off` returns to white light.
-- **Ambient light**: on/off, brightness, color temperature, RGB, transitions.
+- **Ambient light** (`light.yeelight_arwen_d_ambient_light`): on/off,
+  brightness, color temperature, RGB, transitions.
 - State is read locally every 3 s with one `get_prop` call, and right after
   every command. The lamp sends no local push updates, so changes from the
   Mi Home app or the remote appear with up to 3 s delay.
@@ -58,14 +59,14 @@ firmware; prefixed calls are dropped silently.
 
 | Function | Command |
 |---|---|
-| Power | `set_power ["on"/"off", "smooth", ms, mode]` with mode 1 = white, 2 = RGB, 5 = moonlight |
+| Power | `set_power ["on"/"off", "smooth", ms, mode]` with mode 1 = white, 2 = RGB, 5 = night light |
 | Brightness / color temperature / color | `set_bright`, `set_ct_abx`, `set_rgb` with `"smooth", ms` |
-| Moonlight | `set_scene ["nightlight", percent, "smooth", ms]` |
+| Night light | `set_scene ["nightlight", percent, "smooth", ms]` |
 | Effect | `set_fx [1, index, "<preset>"]` |
 | Ambient light | `bg_set_power`, `bg_set_bright`, `bg_set_ct_abx`, `bg_set_rgb` |
 | State | `get_prop [...]` |
 
-`color_mode` of the main light: 1 = RGB, 2 = white (moonlight when `nl_br` > 0),
+`color_mode` of the main light: 1 = RGB, 2 = white (night light when `nl_br` > 0),
 14 = effect (`current_effect_index`). `bg_lmode` of the ambient light: 1 = RGB,
 2 = white.
 

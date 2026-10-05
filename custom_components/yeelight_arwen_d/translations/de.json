@@ -16,15 +16,5 @@
       "unsupported_model": "Dieses Lampenmodell wird nicht unterstützt."
     },
     "abort": { "already_configured": "Diese Lampe ist bereits eingerichtet." }
-  },
-  "entity": {
-    "light": {
-      "ambient": { "name": "Hintergrundlicht" }
-    },
-    "sensor": {
-      "signal": { "name": "WLAN-Signal" },
-      "ip_address": { "name": "IP-Adresse" },
-      "last_restart": { "name": "Letzter Neustart" }
-    }
   }
 }

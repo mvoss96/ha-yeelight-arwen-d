@@ -26,12 +26,12 @@ COLOR_MODE_FLOW = 14
 # Last parameter of set_power / bg_set_power: the mode the light switches into.
 POWER_MODE_CT = 1
 POWER_MODE_RGB = 2
-POWER_MODE_MOONLIGHT = 5
+POWER_MODE_NIGHT_LIGHT = 5
 
 MIN_KELVIN = 2700
 MAX_KELVIN = 6500
 
-EFFECT_MOONLIGHT = "Moonlight"
+EFFECT_NIGHT_LIGHT = "Night light"
 
 # Effects of the addressable main light: name -> set_fx parameters (from Mi Home plugin v13).
 EFFECTS = {

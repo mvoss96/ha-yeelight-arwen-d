@@ -23,7 +23,7 @@ from .const import (
     COLOR_MODE_FLOW,
     COLOR_MODE_RGB,
     EFFECT_BY_INDEX,
-    EFFECT_MOONLIGHT,
+    EFFECT_NIGHT_LIGHT,
     EFFECTS,
     MAX_KELVIN,
     MIN_KELVIN,
@@ -96,11 +96,11 @@ class ArwenLight(ArwenEntity, LightEntity):
 
 
 class MainLight(ArwenLight):
-    """Main light: white, RGB, moonlight and the effects of the addressable LED ring."""
+    """Main light: white, RGB, night light and the effects of the addressable LED ring."""
 
-    _attr_name = None
+    _attr_name = "Primary light"
     _attr_supported_features = LightEntityFeature.TRANSITION | LightEntityFeature.EFFECT
-    _attr_effect_list = [EFFECT_OFF, EFFECT_MOONLIGHT, *EFFECTS]
+    _attr_effect_list = [EFFECT_OFF, EFFECT_NIGHT_LIGHT, *EFFECTS]
 
     def __init__(self, coordinator: ArwenCoordinator) -> None:
         super().__init__(coordinator, "main")
@@ -108,14 +108,14 @@ class MainLight(ArwenLight):
     def _update_from_data(self) -> None:
         d = self.coordinator.data
         mode = int(d["color_mode"])
-        moonlight = mode != COLOR_MODE_RGB and mode != COLOR_MODE_FLOW and int(d["nl_br"] or 0) > 0
+        night_light = mode != COLOR_MODE_RGB and mode != COLOR_MODE_FLOW and int(d["nl_br"] or 0) > 0
         self._attr_is_on = d["main_power"] == "on"
-        self._attr_brightness = to_brightness(d["nl_br"] if moonlight else d["bright"])
+        self._attr_brightness = to_brightness(d["nl_br"] if night_light else d["bright"])
         self._attr_color_temp_kelvin = int(d["ct"])
         self._attr_rgb_color = to_rgb(d["rgb"])
         self._attr_color_mode = ColorMode.RGB if mode in (COLOR_MODE_RGB, COLOR_MODE_FLOW) else ColorMode.COLOR_TEMP
-        if moonlight:
-            self._attr_effect = EFFECT_MOONLIGHT
+        if night_light:
+            self._attr_effect = EFFECT_NIGHT_LIGHT
         elif mode == COLOR_MODE_FLOW:
             self._attr_effect = EFFECT_BY_INDEX.get(int(d["current_effect_index"]), EFFECT_OFF)
         else:
@@ -128,9 +128,9 @@ class MainLight(ArwenLight):
         percent = to_percent(kwargs[ATTR_BRIGHTNESS]) if ATTR_BRIGHTNESS in kwargs else None
         commands: list[tuple[str, list[Any]]] = []
 
-        # Moonlight has its own brightness (nl_br) and is set with one command.
-        if effect == EFFECT_MOONLIGHT or (
-            effect is None and self._attr_effect == EFFECT_MOONLIGHT and self._attr_is_on
+        # Night light has its own brightness (nl_br) and is set with one command.
+        if effect == EFFECT_NIGHT_LIGHT or (
+            effect is None and self._attr_effect == EFFECT_NIGHT_LIGHT and self._attr_is_on
             and ATTR_RGB_COLOR not in kwargs and ATTR_COLOR_TEMP_KELVIN not in kwargs
         ):
             moon = percent or to_percent(self._attr_brightness or 128)
@@ -167,7 +167,7 @@ class MainLight(ArwenLight):
 class AmbientLight(ArwenLight):
     """RGB ambient light around the ceiling light."""
 
-    _attr_translation_key = "ambient"
+    _attr_name = "Ambient light"
     _attr_supported_features = LightEntityFeature.TRANSITION
 
     def __init__(self, coordinator: ArwenCoordinator) -> None:
