@@ -1,3 +1,5 @@
+![Yeelight Arwen D – Custom Home Assistant Integration](images/header.jpg)
+
 # Yeelight Arwen D for Home Assistant
 
 Custom integration for the Yeelight Arwen D ceiling lights
