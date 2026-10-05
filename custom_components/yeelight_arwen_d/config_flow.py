@@ -49,7 +49,12 @@ class ArwenConfigFlow(ConfigFlow, domain=DOMAIN):
                         )
 
         found = await self.hass.async_add_executor_job(discover)
-        options = [{"value": ip, "label": f"{ip} (ID {did})"} for did, ip in sorted(found.items())]
+        configured = {entry.data.get(CONF_DID) for entry in self._async_current_entries()}
+        options = [
+            {"value": ip, "label": f"{ip} (ID {did})"}
+            for did, ip in sorted(found.items())
+            if did not in configured
+        ]
         schema = vol.Schema(
             {
                 vol.Required(CONF_HOST): SelectSelector(
