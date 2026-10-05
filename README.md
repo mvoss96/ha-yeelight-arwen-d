@@ -19,8 +19,11 @@ addressable main light. This integration uses those commands.
   Party, Garden, Winter, Heartbeat, Christmas, Sunset, Fantasy). The effect
   `off` returns to white light.
 - **Ambient light**: on/off, brightness, color temperature, RGB, transitions.
-- State is read locally every 3 s. The lamp sends no local push updates, so
-  changes from the Mi Home app or the remote appear with up to 3 s delay.
+- State is read locally every 3 s with one `get_prop` call, and right after
+  every command. The lamp sends no local push updates, so changes from the
+  Mi Home app or the remote appear with up to 3 s delay.
+- **Diagnostic sensors**: Wi-Fi signal (dBm), IP address and last restart,
+  from `miIO.info`, read about once a minute.
 
 Without a `transition` the lamp fades for 0.5 s, like the Mi Home app.
 `transition: 0` switches instantly.
