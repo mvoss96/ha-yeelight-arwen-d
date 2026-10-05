@@ -109,6 +109,7 @@ logger:
 
 This integration was developed with the help of
 [Claude Code](https://claude.com/claude-code). The protocol details were worked
-out and verified on a real Arwen 600D.
+out and verified on a real Arwen 600D. The header image and the integration
+icon are AI-generated.
 
 Not affiliated with Yeelight or Xiaomi. Licensed under the [MIT License](LICENSE).
