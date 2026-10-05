@@ -8,6 +8,14 @@
           "host": "Lamps found on the network, listed by IP address and device ID. An IP address can also be typed in. If the lamp later gets a different IP address, it is found again automatically.",
           "token": "32-character miIO token of the lamp, e.g. from Xiaomi-cloud-tokens-extractor."
         }
+      },
+      "reconfigure": {
+        "title": "Yeelight Arwen D",
+        "data": { "host": "IP address", "token": "Token" },
+        "data_description": {
+          "host": "Current IP address of the lamp.",
+          "token": "32-character miIO token of the lamp. It changes when the lamp is reset and paired again."
+        }
       }
     },
     "error": {
@@ -15,6 +23,10 @@
       "invalid_token": "The token must be 32 hexadecimal characters.",
       "unsupported_model": "This lamp model is not supported."
     },
-    "abort": { "already_configured": "This lamp is already set up." }
+    "abort": {
+      "already_configured": "This lamp is already set up.",
+      "reconfigure_successful": "The lamp settings were updated.",
+      "wrong_lamp": "This is a different lamp than the one set up in this entry."
+    }
   }
 }

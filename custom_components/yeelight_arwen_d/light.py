@@ -20,6 +20,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import ArwenConfigEntry
 from .const import (
+    COLOR_MODE_CT,
     COLOR_MODE_FLOW,
     COLOR_MODE_RGB,
     EFFECT_BY_INDEX,
@@ -59,12 +60,17 @@ def to_percent(brightness: int) -> int:
     return max(1, round(brightness * 100 / 255))
 
 
+def num(value: str, default: int = 0) -> int:
+    """Convert a get_prop value; properties a firmware does not know come back as ""."""
+    return int(value) if value else default
+
+
 def to_brightness(percent: str) -> int:
-    return round(int(percent) * 255 / 100)
+    return round(num(percent) * 255 / 100)
 
 
 def to_rgb(value: str) -> tuple[int, int, int]:
-    v = int(value)
+    v = num(value)
     return (v >> 16) & 0xFF, (v >> 8) & 0xFF, v & 0xFF
 
 
@@ -89,7 +95,7 @@ class ArwenLight(ArwenEntity, LightEntity):
 
     @property
     def _default_ms(self) -> int:
-        return int(self.coordinator.data["trans_interval_dflt"] or 0)
+        return num(self.coordinator.data["trans_interval_dflt"])
 
     def _handle_coordinator_update(self) -> None:
         self._update_from_data()
@@ -111,17 +117,17 @@ class MainLight(ArwenLight):
 
     def _update_from_data(self) -> None:
         d = self.coordinator.data
-        mode = int(d["color_mode"])
-        night_light = mode != COLOR_MODE_RGB and mode != COLOR_MODE_FLOW and int(d["nl_br"] or 0) > 0
+        mode = num(d["color_mode"], COLOR_MODE_CT)
+        night_light = mode != COLOR_MODE_RGB and mode != COLOR_MODE_FLOW and num(d["nl_br"]) > 0
         self._attr_is_on = d["main_power"] == "on"
         self._attr_brightness = to_brightness(d["nl_br"] if night_light else d["bright"])
-        self._attr_color_temp_kelvin = int(d["ct"])
+        self._attr_color_temp_kelvin = clamp_kelvin(num(d["ct"], MIN_KELVIN))
         self._attr_rgb_color = to_rgb(d["rgb"])
         self._attr_color_mode = ColorMode.RGB if mode in (COLOR_MODE_RGB, COLOR_MODE_FLOW) else ColorMode.COLOR_TEMP
         if night_light:
             self._attr_effect = EFFECT_NIGHT_LIGHT
         elif mode == COLOR_MODE_FLOW:
-            self._attr_effect = EFFECT_BY_INDEX.get(int(d["current_effect_index"]), EFFECT_OFF)
+            self._attr_effect = EFFECT_BY_INDEX.get(num(d["current_effect_index"]), EFFECT_OFF)
         else:
             self._attr_effect = EFFECT_OFF
 
@@ -181,9 +187,9 @@ class AmbientLight(ArwenLight):
         d = self.coordinator.data
         self._attr_is_on = d["bg_power"] == "on"
         self._attr_brightness = to_brightness(d["bg_bright"])
-        self._attr_color_temp_kelvin = int(d["bg_ct"])
+        self._attr_color_temp_kelvin = clamp_kelvin(num(d["bg_ct"], MIN_KELVIN))
         self._attr_rgb_color = to_rgb(d["bg_rgb"])
-        self._attr_color_mode = ColorMode.RGB if int(d["bg_lmode"]) == COLOR_MODE_RGB else ColorMode.COLOR_TEMP
+        self._attr_color_mode = ColorMode.RGB if num(d["bg_lmode"]) == COLOR_MODE_RGB else ColorMode.COLOR_TEMP
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on and apply color and brightness with the requested fade."""

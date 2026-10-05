@@ -8,6 +8,14 @@
           "host": "Im Netz gefundene Lampen mit IP-Adresse und Geräte-ID. Eine IP-Adresse kann auch eingetippt werden. Bekommt die Lampe später eine andere IP-Adresse, wird sie automatisch wiedergefunden.",
           "token": "32-stelliger miIO-Token der Lampe, z. B. aus Xiaomi-cloud-tokens-extractor."
         }
+      },
+      "reconfigure": {
+        "title": "Yeelight Arwen D",
+        "data": { "host": "IP-Adresse", "token": "Token" },
+        "data_description": {
+          "host": "Aktuelle IP-Adresse der Lampe.",
+          "token": "32-stelliger miIO-Token der Lampe. Er ändert sich, wenn die Lampe zurückgesetzt und neu gekoppelt wird."
+        }
       }
     },
     "error": {
@@ -15,6 +23,10 @@
       "invalid_token": "Der Token muss aus 32 Hexadezimalzeichen bestehen.",
       "unsupported_model": "Dieses Lampenmodell wird nicht unterstützt."
     },
-    "abort": { "already_configured": "Diese Lampe ist bereits eingerichtet." }
+    "abort": {
+      "already_configured": "Diese Lampe ist bereits eingerichtet.",
+      "reconfigure_successful": "Die Einstellungen der Lampe wurden aktualisiert.",
+      "wrong_lamp": "Das ist eine andere Lampe als die in diesem Eintrag eingerichtete."
+    }
   }
 }

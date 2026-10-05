@@ -37,8 +37,9 @@ class DefaultTransition(ArwenEntity, NumberEntity):
         super().__init__(coordinator, "default_transition")
 
     @property
-    def native_value(self) -> int:
-        return int(self.coordinator.data["trans_interval_dflt"] or 0)
+    def native_value(self) -> int | None:
+        value = self.coordinator.data["trans_interval_dflt"]
+        return int(value) if value else None
 
     async def async_set_native_value(self, value: float) -> None:
         await self.coordinator.async_send([("set_ps", ["trans_default", f"{int(value)},1"])])

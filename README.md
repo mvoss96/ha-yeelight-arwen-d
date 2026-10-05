@@ -55,10 +55,16 @@ The lamp stays usable in the Mi Home app.
 
 ## Installation
 
-Copy `custom_components/yeelight_arwen_d` into the `custom_components` folder of
-the Home Assistant configuration, or add this repository to HACS as a custom
-repository. Restart Home Assistant, add the integration **Yeelight Arwen D**,
-pick the lamp and enter the token.
+**HACS:** HACS → three-dot menu → *Custom repositories* → add
+`https://github.com/mvoss96/ha-yeelight-arwen-d` with type *Integration*, then
+download **Yeelight Arwen D** and restart Home Assistant.
+
+**Manual:** copy `custom_components/yeelight_arwen_d` into the
+`custom_components` folder of the Home Assistant configuration and restart.
+
+Then add the integration **Yeelight Arwen D**, pick the lamp and enter the
+token. A new token or IP address can be entered later with *Reconfigure* on the
+integration entry, without losing the entities.
 
 ## Protocol notes
 
@@ -85,3 +91,12 @@ logger:
   logs:
     custom_components.yeelight_arwen_d: debug
 ```
+
+## About
+
+This integration was developed with the help of
+[Claude Code](https://claude.com/claude-code). The protocol details were taken
+from the lamp's firmware and the Mi Home device plugin and verified on a real
+Arwen 600D.
+
+Not affiliated with Yeelight or Xiaomi. Licensed under the [MIT License](LICENSE).
