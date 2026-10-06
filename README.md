@@ -68,15 +68,23 @@ The lamp stays usable in the Mi Home app.
 
 ## Installation
 
-**HACS:** HACS → three-dot menu → *Custom repositories* → add
-`https://github.com/mvoss96/ha-yeelight-arwen-d` with type *Integration*, then
+**HACS:**
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mvoss96&repository=ha-yeelight-arwen-d&category=integration)
+
+Or by hand: HACS → three-dot menu → *Custom repositories* → add
+`https://github.com/mvoss96/ha-yeelight-arwen-d` with type *Integration*. Then
 download **Yeelight Arwen D** and restart Home Assistant.
 
 **Manual:** copy `custom_components/yeelight_arwen_d` into the
 `custom_components` folder of the Home Assistant configuration and restart.
 
 Then add the integration **Yeelight Arwen D**, pick the lamp and enter the
-token. A new token or IP address can be entered later with *Reconfigure* on the
+token:
+
+[![Open your Home Assistant instance and start setting up Yeelight Arwen D.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=yeelight_arwen_d)
+
+A new token or IP address can be entered later with *Reconfigure* on the
 integration entry, without losing the entities.
 
 ## Protocol notes
