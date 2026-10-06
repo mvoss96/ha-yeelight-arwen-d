@@ -34,13 +34,17 @@ addressable main light. This integration uses those commands.
 - **Ambient light** (`light.yeelight_arwen_d_ambient_light`): on/off,
   brightness, color temperature, RGB, transitions.
 - **Buttons** for the primary light, like the keys of the remote: Toggle,
-  Brightness up/down, Color temperature up/down. The lamp applies its own
-  step size.
-- **Action `yeelight_arwen_d.adjust`** for both lights: change brightness
-  and/or color temperature by a percentage (-100 to 100) of the full range,
-  computed by the lamp from its current value. Useful for dimmers and rotary
-  knobs, because Home Assistant's `brightness_step` starts from the last
-  reported value, which lags behind during a transition.
+  Brightness up/down (10 percentage points; below 0 % the light turns off),
+  Color temperature up/down (steps 2700/4000/5200/6500 K).
+- **Action `yeelight_arwen_d.adjust`** for both lights, computed by the lamp
+  from its current value:
+  - `brightness_step`: percentage points (-100 to 100). A light that is off
+    counts as 0 % and turns on; going below 0 % turns it off.
+  - `color_temp_step`: percent of the current color temperature (-100 to 100).
+
+  Useful for dimmers and rotary knobs, because Home Assistant's
+  `brightness_step` starts from the last reported value, which lags behind
+  during a transition.
 
   ```yaml
   action: yeelight_arwen_d.adjust
