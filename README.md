@@ -33,6 +33,23 @@ addressable main light. This integration uses those commands.
   `off` returns to white light.
 - **Ambient light** (`light.yeelight_arwen_d_ambient_light`): on/off,
   brightness, color temperature, RGB, transitions.
+- **Buttons** for the primary light, like the keys of the remote: Toggle,
+  Brightness up/down, Color temperature up/down. The lamp applies its own
+  step size.
+- **Action `yeelight_arwen_d.adjust`** for both lights: change brightness
+  and/or color temperature by a percentage (-100 to 100) of the full range,
+  computed by the lamp from its current value. Useful for dimmers and rotary
+  knobs, because Home Assistant's `brightness_step` starts from the last
+  reported value, which lags behind during a transition.
+
+  ```yaml
+  action: yeelight_arwen_d.adjust
+  target:
+    entity_id: light.yeelight_arwen_d_primary_light
+  data:
+    brightness_step: -10
+    transition: 0.3
+  ```
 - State is read locally every 3 s with one `get_prop` call, and right after
   every command. The lamp sends no local push updates, so changes from the
   Mi Home app or the remote appear with up to 3 s delay.

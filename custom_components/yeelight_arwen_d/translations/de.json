@@ -28,5 +28,16 @@
       "reconfigure_successful": "Die Einstellungen der Lampe wurden aktualisiert.",
       "wrong_lamp": "Das ist eine andere Lampe als die in diesem Eintrag eingerichtete."
     }
+  },
+  "services": {
+    "adjust": {
+      "name": "Anpassen",
+      "description": "Ändert Helligkeit und/oder Farbtemperatur relativ zum aktuellen Wert. Die Lampe berechnet den neuen Wert selbst.",
+      "fields": {
+        "brightness_step": { "name": "Helligkeitsschritt", "description": "Änderung in Prozent des Gesamtbereichs, -100 bis 100." },
+        "color_temp_step": { "name": "Farbtemperaturschritt", "description": "Änderung in Prozent des Gesamtbereichs, -100 bis 100." },
+        "transition": { "name": "Übergang", "description": "Überblendzeit in Sekunden. Ohne Angabe gilt die Standard-Übergangszeit der Lampe." }
+      }
+    }
   }
 }

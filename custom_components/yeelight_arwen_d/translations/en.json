@@ -28,5 +28,16 @@
       "reconfigure_successful": "The lamp settings were updated.",
       "wrong_lamp": "This is a different lamp than the one set up in this entry."
     }
+  },
+  "services": {
+    "adjust": {
+      "name": "Adjust",
+      "description": "Changes brightness and/or color temperature relative to the current value. The lamp computes the new value itself.",
+      "fields": {
+        "brightness_step": { "name": "Brightness step", "description": "Change in percent of the full range, -100 to 100." },
+        "color_temp_step": { "name": "Color temperature step", "description": "Change in percent of the full range, -100 to 100." },
+        "transition": { "name": "Transition", "description": "Fade time in seconds. Without it the lamp's default transition is used." }
+      }
+    }
   }
 }

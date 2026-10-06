@@ -1,0 +1,25 @@
+adjust:
+  target:
+    entity:
+      integration: yeelight_arwen_d
+      domain: light
+  fields:
+    brightness_step:
+      selector:
+        number:
+          min: -100
+          max: 100
+          unit_of_measurement: "%"
+    color_temp_step:
+      selector:
+        number:
+          min: -100
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 0.1
+          unit_of_measurement: s

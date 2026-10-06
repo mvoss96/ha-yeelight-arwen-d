@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import voluptuous as vol
+
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_COLOR_TEMP_KELVIN,
@@ -16,6 +18,7 @@ from homeassistant.components.light import (
     LightEntityFeature,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import ArwenConfigEntry
@@ -39,9 +42,18 @@ async def async_setup_entry(
     entry: ArwenConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Add the main light and the ambient light."""
+    """Add the main light and the ambient light, and the adjust action."""
     coordinator = entry.runtime_data
     async_add_entities([MainLight(coordinator), AmbientLight(coordinator)])
+    entity_platform.async_get_current_platform().async_register_entity_service(
+        "adjust",
+        {
+            vol.Optional("brightness_step"): vol.All(vol.Coerce(int), vol.Range(-100, 100)),
+            vol.Optional("color_temp_step"): vol.All(vol.Coerce(int), vol.Range(-100, 100)),
+            vol.Optional(ATTR_TRANSITION): vol.All(vol.Coerce(float), vol.Range(0, 60)),
+        },
+        "async_adjust",
+    )
 
 
 def fade(kwargs: dict[str, Any], default_ms: int) -> list[Any]:
@@ -113,6 +125,26 @@ class ArwenLight(ArwenEntity, LightEntity):
 
     def _update_from_data(self) -> None:
         raise NotImplementedError
+
+    # Command prefix: "" for the primary light, "bg_" for the ambient light.
+    _prefix = ""
+
+    async def async_adjust(
+        self,
+        brightness_step: int | None = None,
+        color_temp_step: int | None = None,
+        transition: float | None = None,
+    ) -> None:
+        """Change brightness and/or color temperature by a percentage, computed by the lamp."""
+        # adjust_* take a plain duration; the lamp accepts no less than 30 ms.
+        smooth = fade({ATTR_TRANSITION: transition} if transition is not None else {}, self._default_ms)
+        ms = max(30, smooth[1])
+        commands: list[tuple[str, list[Any]]] = []
+        if brightness_step:
+            commands.append((f"{self._prefix}adjust_bright", [brightness_step, ms]))
+        if color_temp_step:
+            commands.append((f"{self._prefix}adjust_ct", [color_temp_step, ms]))
+        await self.coordinator.async_send(commands)
 
 
 class MainLight(ArwenLight):
@@ -186,6 +218,7 @@ class AmbientLight(ArwenLight):
     """RGB ambient light around the ceiling light."""
 
     _attr_name = "Ambient light"
+    _prefix = "bg_"
     _attr_supported_features = LightEntityFeature.TRANSITION
 
     def __init__(self, coordinator: ArwenCoordinator) -> None:
