@@ -8,5 +8,5 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/mvoss96/ha-yeelight-arwen-d/issues",
   "requirements": [],
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
