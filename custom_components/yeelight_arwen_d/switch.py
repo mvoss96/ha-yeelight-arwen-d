@@ -22,7 +22,7 @@ async def async_setup_entry(
 ) -> None:
     """Add one switch per setting."""
     coordinator = entry.runtime_data
-    async_add_entities(SettingSwitch(coordinator, key) for key in SWITCH_SETTINGS)
+    async_add_entities([*(SettingSwitch(coordinator, key) for key in SWITCH_SETTINGS), FadeInSwitch(coordinator)])
 
 
 class SettingSwitch(ArwenEntity, SwitchEntity):
@@ -45,3 +45,30 @@ class SettingSwitch(ArwenEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         await self.coordinator.async_send([("set_ps", [self._setting, "0"])])
+
+
+class FadeInSwitch(ArwenEntity, SwitchEntity):
+    """Fade in when the lamp is turned on (power_on_effect), written together with the default transition."""
+
+    _attr_name = "Fade in when turned on"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, coordinator: ArwenCoordinator) -> None:
+        super().__init__(coordinator, "fade_in")
+
+    @property
+    def is_on(self) -> bool | None:
+        # 0 turns on at once, 1-5 fade in.
+        value = self.coordinator.data["power_on_effect"]
+        return value != "0" if value else None
+
+    async def _async_set(self, effect: str) -> None:
+        # set_ps trans_default takes "<default transition ms>,<power_on_effect>".
+        ms = self.coordinator.data["trans_interval_dflt"]
+        await self.coordinator.async_send([("set_ps", ["trans_default", f"{ms},{effect}"])])
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        await self._async_set("1")
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        await self._async_set("0")

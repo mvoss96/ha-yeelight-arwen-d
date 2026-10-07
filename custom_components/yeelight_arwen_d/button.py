@@ -14,7 +14,7 @@ from .entity import ArwenEntity
 from .light import num
 
 # key -> (entity name, miIO method, params).
-# Brightness moves by 10 points; below 0 the lamp turns off. set_adjust for brightness jumps
+# Brightness moves by 10 points; below 1 % the lamp turns off. set_adjust for brightness jumps
 # in large fixed steps (50 -> 100 -> 40), so it is only used for color temperature, where it
 # steps through 2700/4000/5200/6500 K.
 BUTTONS: dict[str, tuple[str, str, list[Any]]] = {
@@ -46,6 +46,6 @@ class ArwenButton(ArwenEntity, ButtonEntity):
     async def async_press(self) -> None:
         params = self._params
         if self._method == "adjust_bright":
-            # adjust_bright needs a duration; use the lamp's default transition (at least 30 ms).
-            params = [*params, max(30, num(self.coordinator.data["trans_interval_dflt"]))]
+            # adjust_bright needs a duration; use the lamp's default transition.
+            params = [*params, num(self.coordinator.data["trans_interval_dflt"])]
         await self.coordinator.async_send([(self._method, params)])

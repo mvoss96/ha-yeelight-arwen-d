@@ -16,7 +16,7 @@ CONF_DID = "did"
 PROPS = (
     "main_power", "bright", "ct", "rgb", "color_mode", "nl_br", "current_effect_index",
     "bg_power", "bg_bright", "bg_ct", "bg_rgb", "bg_lmode",
-    "trans_interval_dflt", "bg_proact", "save_state", "smart_switch",
+    "trans_interval_dflt", "power_on_effect", "bg_proact", "save_state", "smart_switch",
 )
 
 # On/off settings of the Mi Home app: key -> (property read with get_prop, name written with set_ps, entity name).

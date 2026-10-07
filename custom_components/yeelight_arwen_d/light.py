@@ -64,8 +64,7 @@ def fade(kwargs: dict[str, Any], default_ms: int) -> list[Any]:
     """
     seconds = kwargs.get(ATTR_TRANSITION)
     ms = default_ms if seconds is None else int(seconds * 1000)
-    # The lamp rejects smooth fades shorter than 30 ms.
-    return ["smooth", ms] if ms >= 30 else ["sudden", 0]
+    return ["smooth", ms] if ms > 0 else ["sudden", 0]
 
 
 def to_percent(brightness: int) -> int:
@@ -136,9 +135,8 @@ class ArwenLight(ArwenEntity, LightEntity):
         transition: float | None = None,
     ) -> None:
         """Change brightness and/or color temperature by a percentage, computed by the lamp."""
-        # adjust_* take a plain duration; the lamp accepts no less than 30 ms.
-        smooth = fade({ATTR_TRANSITION: transition} if transition is not None else {}, self._default_ms)
-        ms = max(30, smooth[1])
+        # adjust_* take a plain duration in ms instead of "smooth"/"sudden"; 0 changes at once.
+        ms = self._default_ms if transition is None else int(transition * 1000)
         commands: list[tuple[str, list[Any]]] = []
         if brightness_step:
             commands.append((f"{self._prefix}adjust_bright", [brightness_step, ms]))

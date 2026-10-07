@@ -34,7 +34,7 @@
       "name": "Adjust",
       "description": "Changes brightness and/or color temperature relative to the current value. The lamp computes the new value itself.",
       "fields": {
-        "brightness_step": { "name": "Brightness step", "description": "Change in percentage points, -100 to 100. A light that is off counts as 0 % and turns on; going below 0 % turns it off." },
+        "brightness_step": { "name": "Brightness step", "description": "Change in percentage points, -100 to 100. A light that is off counts as 0 % and turns on; below 1 % it turns off." },
         "color_temp_step": { "name": "Color temperature step", "description": "Change in percent of the current color temperature, -100 to 100." },
         "transition": { "name": "Transition", "description": "Fade time in seconds. Without it the lamp's default transition is used." }
       }

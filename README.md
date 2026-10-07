@@ -34,12 +34,12 @@ addressable main light. This integration uses those commands.
 - **Ambient light** (`light.yeelight_arwen_d_ambient_light`): on/off,
   brightness, color temperature, RGB, transitions.
 - **Buttons** for the primary light, like the keys of the remote: Toggle,
-  Brightness up/down (10 percentage points; below 0 % the light turns off),
+  Brightness up/down (10 percentage points; below 1 % the light turns off),
   Color temperature up/down (steps 2700/4000/5200/6500 K).
 - **Action `yeelight_arwen_d.adjust`** for both lights, computed by the lamp
   from its current value:
   - `brightness_step`: percentage points (-100 to 100). A light that is off
-    counts as 0 % and turns on; going below 0 % turns it off.
+    counts as 0 % and turns on; below 1 % it turns off.
   - `color_temp_step`: percent of the current color temperature (-100 to 100).
 
   Useful for dimmers and rotary knobs, because Home Assistant's
@@ -65,8 +65,10 @@ addressable main light. This integration uses those commands.
   - `Remember last state`: after power returns, the lamp restores its last
     state.
   - `Wall switch mode`: for operation with a Mi wall switch.
-  - `Default transition` (30-10000 ms): the fade the lamp uses when a command
+  - `Default transition` (0-10000 ms): the fade the lamp uses when a command
     carries no fade time.
+  - `Fade in when turned on`: the lamp fades in instead of switching on at
+    once.
 
 Without a `transition` the lamp fades for its `Default transition`.
 `transition: 0` switches instantly.
@@ -77,6 +79,9 @@ Without a `transition` the lamp fades for its `Default transition`.
 - The lamp's 32-character miIO token, for example from
   [Xiaomi-cloud-tokens-extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor).
   The token changes when the lamp is reset and paired again.
+- Home Assistant in the same IP subnet as the lamp. The lamp ignores local
+  packets from other subnets, so control across a router or VLAN boundary does
+  not work, not even with port forwarding.
 
 No fixed IP address is needed. The setup dialog lists the lamps that answer a
 miIO broadcast (hello packet to UDP 54321) by IP address and device ID; an IP
@@ -86,6 +91,15 @@ and if the lamp answers under a different IP address, that address is used and
 saved.
 
 The lamp stays usable in the Mi Home app.
+
+Good to know:
+
+- Without an internet connection the lamp keeps working locally, but after
+  15 minutes without a cloud connection it reconnects to the Wi-Fi and is
+  unreachable for a short time.
+- Switching the lamp off and on with the wall switch five times in a row, each
+  within 5 seconds, resets Wi-Fi, the cloud binding and all settings. The lamp
+  then needs to be paired again and gets a new token.
 
 ## Installation
 
@@ -120,6 +134,7 @@ firmware; prefixed calls are dropped silently.
 | Night light | `set_scene ["nightlight", percent, "smooth", ms]` |
 | Effect | `set_fx [1, index, "<preset>"]` |
 | Ambient light | `bg_set_power`, `bg_set_bright`, `bg_set_ct_abx`, `bg_set_rgb` |
+| Default transition and fade-in | `set_ps ["trans_default", "<ms>,<power_on_effect>"]`; the second value is 0 = switch on at once, 1-5 = fade in, so both are always written together |
 | State | `get_prop [...]` |
 
 `color_mode` of the main light: 1 = RGB, 2 = white (night light when `nl_br` > 0),

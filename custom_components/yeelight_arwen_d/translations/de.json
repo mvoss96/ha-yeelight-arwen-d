@@ -34,7 +34,7 @@
       "name": "Anpassen",
       "description": "Ändert Helligkeit und/oder Farbtemperatur relativ zum aktuellen Wert. Die Lampe berechnet den neuen Wert selbst.",
       "fields": {
-        "brightness_step": { "name": "Helligkeitsschritt", "description": "Änderung in Prozentpunkten, -100 bis 100. Ein ausgeschaltetes Licht zählt als 0 % und geht an; unter 0 % geht es aus." },
+        "brightness_step": { "name": "Helligkeitsschritt", "description": "Änderung in Prozentpunkten, -100 bis 100. Ein ausgeschaltetes Licht zählt als 0 % und geht an; unter 1 % geht es aus." },
         "color_temp_step": { "name": "Farbtemperaturschritt", "description": "Änderung in Prozent der aktuellen Farbtemperatur, -100 bis 100." },
         "transition": { "name": "Übergang", "description": "Überblendzeit in Sekunden. Ohne Angabe gilt die Standard-Übergangszeit der Lampe." }
       }
