@@ -22,6 +22,32 @@ not offer the Yeelight LAN protocol (TCP 55443). It does accept the Yeelight
 command set over miIO (UDP 54321), including fade times and the effects of the
 addressable main light. This integration uses those commands.
 
+## Yeelight Ceiling3 (YLXD17YL)
+
+The integration also supports the older ceiling light `yeelink.light.ceiling3`
+(tested with firmware 2.0.2_0048). That lamp does offer the Yeelight LAN
+protocol, but accepts only 60 commands per minute per connection there and
+answers further ones with `client quota exceeded`; a rotary knob reaches that
+within seconds. Music mode, the usual way around the limit, is rejected over
+LAN. Commands over miIO have no such limit.
+
+For this model the integration:
+
+- creates one light (`Primary light`): on/off, brightness, color temperature
+  (2700-6500 K), transitions and the effect `Night light` with its own
+  brightness. Brightness changes while the night light is on change the night
+  light. The `adjust` action and the buttons work as on the Arwen D.
+- sends all commands over miIO,
+- keeps a connection to TCP 55443 open only to be told when the lamp changed,
+  so changes from the remote or the Yeelight app appear at once. Nothing is
+  sent on that connection. Each message triggers a `get_prop` over miIO; the
+  pushed values themselves are not used, because they arrive about 0.2 s late
+  and can be older than the state read after a later command. While the
+  connection is open the lamp is polled once a minute, otherwise every 3 s.
+
+The configuration switches and the default transition entity are not created;
+the ceiling3 lacks those settings.
+
 ## Features
 
 - **Primary light** (`light.yeelight_arwen_d_primary_light`): on/off,

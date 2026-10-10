@@ -3,12 +3,20 @@
 from datetime import timedelta
 
 DOMAIN = "yeelight_arwen_d"
-SUPPORTED_MODELS = ("yeelink.light.ceil43",)
+MODEL_ARWEN_D = "yeelink.light.ceil43"
+MODEL_CEILING3 = "yeelink.light.ceiling3"
+SUPPORTED_MODELS = (MODEL_ARWEN_D, MODEL_CEILING3)
+# Device name per model.
+MODEL_NAMES = {MODEL_ARWEN_D: "Yeelight Arwen D", MODEL_CEILING3: "Yeelight Ceiling3"}
 SCAN_INTERVAL = timedelta(seconds=3)
+# Poll interval while the lamp pushes its state changes over the Yeelight LAN protocol.
+PUSH_SCAN_INTERVAL = timedelta(seconds=60)
+# Yeelight LAN protocol port; only the ceiling3 offers it.
+LAN_PORT = 55443
 # Minimum seconds between two broadcast searches for a lamp that stopped answering.
 REDISCOVERY_INTERVAL = 60
-# miIO.info (Wi-Fi signal, uptime) is read on every 20th poll, about once a minute.
-INFO_EVERY_POLLS = 20
+# Minimum seconds between two reads of miIO.info (Wi-Fi signal, uptime).
+INFO_INTERVAL = 60
 
 CONF_DID = "did"
 
@@ -18,6 +26,8 @@ PROPS = (
     "bg_power", "bg_bright", "bg_ct", "bg_rgb", "bg_lmode",
     "trans_interval_dflt", "power_on_effect", "bg_proact", "save_state", "smart_switch",
 )
+# Properties of the ceiling3: white light and night light only. active_mode is 1 in night light.
+PROPS_CEILING3 = ("power", "bright", "ct", "nl_br", "active_mode", "trans_interval_dflt")
 
 # On/off settings of the Mi Home app: key -> (property read with get_prop, name written with set_ps, entity name).
 SWITCH_SETTINGS = {

@@ -12,7 +12,7 @@ from homeassistant.const import CONF_HOST, CONF_TOKEN
 from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 
-from .const import CONF_DID, DOMAIN, SUPPORTED_MODELS
+from .const import CONF_DID, DOMAIN, MODEL_NAMES, SUPPORTED_MODELS
 from .miio import MiioClient, MiioError, discover
 
 
@@ -39,6 +39,7 @@ class ArwenConfigFlow(ConfigFlow, domain=DOMAIN):
         if info["model"] not in SUPPORTED_MODELS:
             errors["base"] = "unsupported_model"
             return None
+        self._title = MODEL_NAMES[info["model"]]
         await self.async_set_unique_id(format_mac(info["mac"]))
         return {CONF_HOST: host, CONF_TOKEN: token, CONF_DID: client.did}
 
@@ -51,7 +52,7 @@ class ArwenConfigFlow(ConfigFlow, domain=DOMAIN):
             data = await self._async_validate(user_input, errors)
             if data is not None:
                 self._abort_if_unique_id_configured(updates={CONF_HOST: data[CONF_HOST], CONF_DID: data[CONF_DID]})
-                return self.async_create_entry(title="Yeelight Arwen D", data=data)
+                return self.async_create_entry(title=self._title, data=data)
 
         found = await self.hass.async_add_executor_job(discover)
         configured = {entry.data.get(CONF_DID) for entry in self._async_current_entries()}

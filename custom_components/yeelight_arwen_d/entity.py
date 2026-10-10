@@ -5,12 +5,12 @@ from __future__ import annotations
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DOMAIN, MODEL_NAMES
 from .coordinator import ArwenCoordinator
 
 
 class ArwenEntity(CoordinatorEntity[ArwenCoordinator]):
-    """Entity of one Yeelight Arwen D lamp."""
+    """Entity of one lamp."""
 
     _attr_has_entity_name = True
 
@@ -24,6 +24,6 @@ class ArwenEntity(CoordinatorEntity[ArwenCoordinator]):
             connections={(CONNECTION_NETWORK_MAC, info["mac"])},
             manufacturer="Yeelight",
             model=info["model"],
-            name="Yeelight Arwen D",
+            name=MODEL_NAMES[info["model"]],
             sw_version=info["fw_ver"],
         )

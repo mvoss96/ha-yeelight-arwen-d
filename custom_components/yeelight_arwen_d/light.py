@@ -31,6 +31,7 @@ from .const import (
     EFFECTS,
     MAX_KELVIN,
     MIN_KELVIN,
+    MODEL_CEILING3,
     POWER_MODE_CT,
     POWER_MODE_RGB,
 )
@@ -42,9 +43,12 @@ async def async_setup_entry(
     entry: ArwenConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Add the main light and the ambient light, and the adjust action."""
+    """Add the lights of the lamp model, and the adjust action."""
     coordinator = entry.runtime_data
-    async_add_entities([MainLight(coordinator), AmbientLight(coordinator)])
+    if coordinator.model == MODEL_CEILING3:
+        async_add_entities([Ceiling3Light(coordinator)])
+    else:
+        async_add_entities([MainLight(coordinator), AmbientLight(coordinator)])
     entity_platform.async_get_current_platform().async_register_entity_service(
         "adjust",
         {
@@ -210,6 +214,26 @@ class MainLight(ArwenLight):
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off with the requested fade."""
         await self.coordinator.async_send([("set_power", ["off", *fade(kwargs, self._default_ms)])])
+
+
+class Ceiling3Light(MainLight):
+    """White light of a Yeelight Ceiling3 with its night light; no RGB, effects or ambient light.
+
+    Night light uses the same commands as on the Arwen D: set_scene "nightlight" turns it on,
+    set_bright and adjust_bright change its brightness, set_power mode 1 returns to white.
+    """
+
+    _attr_supported_color_modes = {ColorMode.COLOR_TEMP}
+    _attr_color_mode = ColorMode.COLOR_TEMP
+    _attr_effect_list = [EFFECT_OFF, EFFECT_NIGHT_LIGHT]
+
+    def _update_from_data(self) -> None:
+        d = self.coordinator.data
+        night_light = d["active_mode"] == "1"
+        self._attr_is_on = d["power"] == "on"
+        self._attr_brightness = to_brightness(d["nl_br"] if night_light else d["bright"])
+        self._attr_color_temp_kelvin = clamp_kelvin(num(d["ct"], MIN_KELVIN))
+        self._attr_effect = EFFECT_NIGHT_LIGHT if night_light else EFFECT_OFF
 
 
 class AmbientLight(ArwenLight):
